@@ -2,6 +2,7 @@
 
 Choose BuildLib Target and Run the project.<br>
 You will get a CHJSWebViewLib.framework.<br>
+Or find it under the product directory.<br>
 
 How to Use?<br>
 
@@ -13,4 +14,4 @@ How to Use?<br>
     
 there you go!
 
-Jiao 2015.4.3
+Jiao by 2015.4.3

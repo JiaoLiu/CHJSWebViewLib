@@ -362,6 +362,7 @@
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = CHJSWebDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -376,6 +377,7 @@
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = CHJSWebDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -434,6 +436,7 @@
 				0F4D56DD1AEE2FA900CF56BE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		0F4D56DE1AEE2FA900CF56BE /* Build configuration list for PBXNativeTarget "CHJSWebDemoTests" */ = {
 			isa = XCConfigurationList;
@@ -442,6 +445,7 @@
 				0F4D56E01AEE2FA900CF56BE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

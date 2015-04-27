@@ -1,0 +1,6 @@
+framework module CHJSWebViewLib {
+  umbrella header "CHJSWebViewLib.h"
+
+  export *
+  module * { export * }
+}

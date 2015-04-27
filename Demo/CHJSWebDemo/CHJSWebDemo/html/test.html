@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<input id="osType" type="text" />
+<button onclick="asynTest()">异步测试</button>
+<div id="successId"></div>
+<div id="failId"></div>
+<script>
+    var isIOS;//是否IOS操作系统类型
+    var browser = {
+        isIOS:function(){
+            var u = navigator.userAgent, app = navigator.appVersion;
+            if ( !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/) || u.indexOf('iPhone') > -1 || u.indexOf('iPad') > -1 )
+                return true;
+            else return false;
+        }
+    }
+    isIOS = browser.isIOS();
+    var syncResult = null;//IOS同步方法返回值，接收值后请及时清空
+//同步操作
+/*    //IOS执行
+    var iframe = document.createElement("iframe");
+    iframe.setAttribute( "src" , "http://come.changhong.native.sync/osType");
+    document.documentElement.appendChild(iframe);
+    iframe.parentNode.removeChild(iframe);
+    iframe = null ;
+    //android执行
+    if(syncResult == null){
+        syncResult = prompt("http://come.changhong.native.sync/osType");
+
+    }*/
+    var osTypeInput = document.getElementById("osType");
+    osTypeInput.value = isIOS;
+    /* 获得设备操作系统类型-end*/
+
+    var callbackMap = new Map();//所有回调函（对象）临时数缓存在此
+    /**
+     *公共回调函数，native端调用。所有回调函数对象均缓存到callbackMap中，此函数通过native端
+     * 返回的key来找到具体回调函数对象，并完成调用，并清除缓存。
+     * @param result native端返回的json数据，格式如：{"successKey":"ajax_s1234325676","failKey":"ajax_f1234325676",
+     * "isSuccess":"true","response":"xx对象或字符串",
+     * "token":"xxxxxxxxx","errorCode":"401","msg":"xxxxxxx"},不一定完全包含所有字段。
+     */
+    function commonCallback(result){
+        var successKey = result.successKey;
+        var failKey = result.failKey;
+        var successCallback = callbackMap.get(successKey);
+        var failCallback = callbackMap.get(failKey);
+        var isSuccess = result.isSuccess
+        if(isSuccess){
+            successCallback.call(this,result);
+        }else{
+            failCallback.call(this,result);
+        }
+        callbackMap.remove(successKey);
+        callbackMap.remove(failKey);
+    }
+
+    function asynTest(){
+        this.title = "hello";
+        this.message = "this is a test";
+        this.success = function(data){
+            var divSuccess = document.getElementById("successId");
+            divSuccess.innerHTML = "success:" + data.message;
+        };
+        this.fail = function(data){
+            var divfail = document.getElementById("failId");
+            divfail.innerHTML = "fail:" + data.message;
+        }
+        this.successKey = "ajax_s" + new Date().getTime();
+        callbackMap.put(successKey,this.success);
+        this.failKey = "ajax_f" + new Date().getTime();
+        callbackMap.put(failKey,this.fail);
+        if(isIOS){
+            var param = '[{"successKey":"' + this.successKey + '","failKey":"' + this.failKey + '"},{"title":"' + this.title + '"},{"message":"'+ this.message + '"},{"button":"'+"cancel"+'"},{"button":"'+"ok"+'"},{"style":"'+ "3" +'"},{"action":"'+ "dismiss" +'"},{"action":"'+ "ok" +'"}]';
+            window.location = encodeURI("http://com.changhong.native.async/showActionSheet:title:message:button:button:style:action:action:?param=" + param);
+        }else{
+          window.Native.asynTest(this.title,this.message,this.successKey,this.failKey);
+        }
+        this.successKey = "";
+        this.failKey = "";
+        return true;
+    }
+
+    /**
+     *存储键值对的Map数据结构对象
+     * @constructor
+     */
+    function Map() {
+        this.elements = new Array();
+        this.size = function() {
+            return this.elements.length;
+        };
+        this.isEmpty = function() {
+            return (this.elements.length < 1);
+        };
+        this.clear = function() {
+            this.elements = new Array();
+        };
+        this.put = function(key,value) {
+            this.elements.push( {
+                key :key,
+                value :value
+            });
+        };
+        this.remove = function(key) {
+            var bln = false;
+            try {
+                for (i = 0; i < this.elements.length; i++) {
+                    if (this.elements[i].key == key) {
+                        this.elements.splice(i, 1);
+                        return true;
+                    }
+                }
+            } catch (e) {
+                bln = false;
+            }
+            return bln;
+        };
+        this.get = function(key) {
+            try {
+                for (i = 0; i < this.elements.length; i++) {
+                    if (this.elements[i].key == key) {
+                        return this.elements[i].value;
+                    }
+                }
+            } catch (e) {
+                return null;
+            }
+        };
+        this.element = function(index) {
+            if (index < 0 || index >= this.elements.length) {
+                return null;
+            }
+            return this.elements[index];
+        };
+        this.containsKey = function(key) {
+            var bln = false;
+            try {
+                for (i = 0; i < this.elements.length; i++) {
+                    if (this.elements[i].key == key) {
+                        bln = true;
+                    }
+                }
+            } catch (e) {
+                bln = false;
+            }
+            return bln;
+        };
+        this.containsValue = function(value) {
+            var bln = false;
+            try {
+                for (i = 0; i < this.elements.length; i++) {
+                    if (this.elements[i].value == value) {
+                        bln = true;
+                    }
+                }
+            } catch (e) {
+                bln = false;
+            }
+            return bln;
+        };
+        this.values = function() {
+            var arr = new Array();
+            for (i = 0; i < this.elements.length; i++) {
+                arr.push(this.elements[i].value);
+            }
+            return arr;
+        };
+        this.keys = function() {
+            var arr = new Array();
+            for (i = 0; i < this.elements.length; i++) {
+                arr.push(this.elements[i].key);
+            }
+            return arr;
+        };
+    }
+</script>
+</body>
+</html>
